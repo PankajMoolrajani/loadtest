@@ -4,6 +4,8 @@ import urllib2
 import threading
 
 def main():
+	gloabal list_result
+	lsit_result = [200]
 	args = arguments()
 	dict_arg = {}
 	if args.number:
@@ -17,7 +19,7 @@ def main():
 
 	dict_result = do_threading(dict_arg)
 	print '\n\n'
-	print dict_result
+
 
 def arguments():
 	parser = argparse.ArgumentParser()
@@ -29,25 +31,21 @@ def arguments():
 	return parser.parse_args()
 
 def do_threading(dict_arg):
-	list_thread = []
-	dict_result = {}
+    	list_threads = []
 	for url in dict_arg['u']:
 		for n in range(dict_arg['n']/dict_arg['c']):
 			for c in range(dict_arg['c']):
-				t = threading.Thread(target=request, args=(url,))
-				t.start()
-				list_thread.append(t)
-				res_code = str(urllib2.urlopen(url).code)
-				if url not in dict_result.keys():
-					dict_result[url] = {res_code: 1}
-				else:
-					if res_code not in dict_result[url].keys():
-						dict_result[url][res_code] = 1
-					else:
-						dict_result[url][res_code] = dict_result[url][res_code]+1
-	return dict_result
+                		t = threading.Thread(target=request, args=(url, list_result))
+                		list_threads.append(t)
+                		t.start()
+				#res_code = str(urllib2.urlopen(url).code)
 
+def request(url, list_result):
+	res_code = str(urllib2.urlopen(url).code)
+	list_result.append(res_code)
+	print list_result
 
+	
 	
 if __name__ == "__main__":
 	main()
