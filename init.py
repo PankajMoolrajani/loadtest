@@ -2,24 +2,23 @@
 import argparse
 import urllib2
 import threading
+import time
 
 def main():
-	gloabal list_result
-	lsit_result = [200]
 	args = arguments()
+	global dict_arg
 	dict_arg = {}
 	if args.number:
 		dict_arg['n'] = int(args.number)
 	if args.concurrent:
 		dict_arg['c'] = int(args.concurrent)
 	if args.url:
-		dict_arg['u'] = [args.url]
+		dict_arg['u'] = args.url
 	if args.file:
 		dict_arg['f'] = args.file
 
-	dict_result = do_threading(dict_arg)
-	print '\n\n'
-
+	do_threading(dict_arg)
+	
 
 def arguments():
 	parser = argparse.ArgumentParser()
@@ -31,21 +30,29 @@ def arguments():
 	return parser.parse_args()
 
 def do_threading(dict_arg):
-    	list_threads = []
-	for url in dict_arg['u']:
-		for n in range(dict_arg['n']/dict_arg['c']):
-			for c in range(dict_arg['c']):
-                		t = threading.Thread(target=request, args=(url, list_result))
-                		list_threads.append(t)
-                		t.start()
-				#res_code = str(urllib2.urlopen(url).code)
+    global list_result
+    list_result = []
+    list_threads = []
+    url = dict_arg['u']
+    for n in range(dict_arg['n']/dict_arg['c']):
+		for c in range(dict_arg['c']):
+			t = threading.Thread(target=request, args=(url, list_result))
+			list_threads.append(t)
+			t.start()
 
 def request(url, list_result):
+	n = dict_arg['n']
 	res_code = str(urllib2.urlopen(url).code)
 	list_result.append(res_code)
-	print list_result
+	if len(list_result) == n:
+		displayResults(list_result)
+		
 
-	
+def displayResults(list_result):
+	set_result = set(list_result)
+	for code in set_result:
+		print dict_arg['u']
+		print code+": "+str(list_result.count(code))
 	
 if __name__ == "__main__":
 	main()
