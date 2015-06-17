@@ -42,10 +42,17 @@ def do_threading(dict_arg):
 
 def request(url, list_result):
 	n = dict_arg['n']
+	time_start = time.time()
 	res_code = str(urllib2.urlopen(url).code)
+	
+	#print time_res
 	list_result.append(res_code)
 	if len(list_result) == n:
 		displayResults(list_result)
+		time_end = time.time()
+		time_res = time_end - time_start
+		print "Time: ",
+		print time_res
 		
 
 def displayResults(list_result):
